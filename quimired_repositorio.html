@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuimiRed - Repositorio Educativo de Química</title>
+    <!-- Tailwind CSS para diseño moderno, limpio y profesional -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .custom-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- TOP BAR - SELECCIÓN DE ROL SIMULADO -->
+    <div class="bg-emerald-900 text-white text-xs md:text-sm py-2 px-4 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+            <span class="font-medium">🏫 Repositorio para Educación Básica Secundaria y Media</span>
+            <div class="flex items-center gap-2">
+                <label for="roleSelector" class="font-bold text-emerald-200">Rol de Usuario Simulado:</label>
+                <select id="roleSelector" onchange="changeRole(this.value)" class="bg-emerald-800 text-white font-semibold rounded px-2 py-1 outline-none border border-emerald-700 cursor-pointer">
+                    <option value="Estudiante" selected>Estudiante (Descargar y buscar)</option>
+                    <option value="Docente">Docente (Subir y proponer recursos)</option>
+                    <option value="Evaluador">Evaluador Académico (Validar pertinencia)</option>
+                    <option value="Administrador">Administrador (Gestionar y supervisar)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVEGACIÓN -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-40 card-shadow">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Logo -->
+            <a href="#" onclick="showSection('inicio')" class="flex items-center gap-3">
+                <div class="bg-teal-600 text-white p-2.5 rounded-xl shadow-md shadow-teal-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 leading-none">QuimiRed</h1>
+                    <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Red de Aprendizaje Químico</span>
+                </div>
+            </a>
+
+            <!-- Navegación -->
+            <nav class="flex flex-wrap justify-center gap-1 md:gap-2">
+                <button onclick="showSection('inicio')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-teal-600 hover:bg-slate-50 transition">Inicio</button>
+                <button onclick="showSection('recursos')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-teal-600 hover:bg-slate-50 transition">Recursos</button>
+                <button onclick="showSection('simuladores')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-teal-600 hover:bg-slate-50 transition">Simuladores</button>
+                <button onclick="showSection('videos')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-teal-600 hover:bg-slate-50 transition">Videos</button>
+                <button onclick="showSection('guias')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-teal-600 hover:bg-slate-50 transition">Guías</button>
+                <button onclick="showSection('evaluaciones')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-teal-600 hover:bg-slate-50 transition">Evaluaciones</button>
+                <button onclick="showSection('contacto')" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-teal-600 hover:bg-slate-50 transition">Contacto</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- BANNER DE ROL / ALERTA DE FUNCIONES DOCENTES -->
+    <div id="roleAlertBanner" class="bg-amber-50 border-y border-amber-200 text-amber-900 px-4 py-3 hidden">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">🛠️</span>
+                <p class="text-sm font-medium">
+                    Tienes activo el rol de <strong id="alertRoleName">Docente</strong>. Se ha habilitado la opción de <strong class="underline decoration-wavy decoration-amber-500">Subir Recursos</strong> y gestionar el flujo de aprobación curricular.
+                </p>
+            </div>
+            <button onclick="showSection('subir-recurso')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-1.5 rounded transition">Ir a Subir Recurso</button>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- ================= SECCIÓN: INICIO ================= -->
+        <section id="inicio-sec" class="space-y-12">
+            <!-- Hero -->
+            <div class="custom-gradient text-white rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-xl shadow-slate-900/10">
+                <div class="max-w-3xl space-y-6 relative z-10">
+                    <span class="bg-teal-500/20 border border-teal-500/30 text-teal-300 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">Proyecto Universitario</span>
+                    <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight">Tu espacio interactivo para descubrir la Química</h2>
+                    <p class="text-slate-300 text-base md:text-lg">
+                        QuimiRed es una plataforma digital diseñada especialmente para la enseñanza y el aprendizaje dinámico de la química en instituciones de educación básica secundaria y media (Grados 6° a 11°).
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="showSection('recursos')" class="bg-teal-500 hover:bg-teal-600 text-slate-950 font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-teal-500/20">Explorar Recursos</button>
+                        <button onclick="showSection('simuladores')" class="bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold px-6 py-3 rounded-xl transition">Ir a Simuladores</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navegación rápida por Grados -->
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold text-slate-900">Selección Rápida por Grados</h3>
+                <p class="text-sm text-slate-500">Filtra rápidamente la biblioteca y recursos académicos de acuerdo a tu nivel escolar actual:</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <button onclick="filterByGrade('6°')" class="bg-white border border-slate-200 hover:border-teal-500 hover:bg-teal-50/20 p-4 rounded-xl text-center transition group">
+                        <span class="block text-2xl mb-1">🧪</span>
+                        <span class="block font-bold text-slate-800 group-hover:text-teal-600">Grado 6°</span>
+                        <span class="text-xs text-slate-400">Iniciación a las Ciencias</span>
+                    </button>
+                    <button onclick="filterByGrade('7°')" class="bg-white border border-slate-200 hover:border-teal-500 hover:bg-teal-50/20 p-4 rounded-xl text-center transition group">
+                        <span class="block text-2xl mb-1">🔬</span>
+                        <span class="block font-bold text-slate-800 group-hover:text-teal-600">Grado 7°</span>
+                        <span class="text-xs text-slate-400">Materia y Cambios</span>
+                    </button>
+                    <button onclick="filterByGrade('8°')" class="bg-white border border-slate-200 hover:border-teal-500 hover:bg-teal-50/20 p-4 rounded-xl text-center transition group">
+                        <span class="block text-2xl mb-1">⚖️</span>
+                        <span class="block font-bold text-slate-800 group-hover:text-teal-600">Grado 8°</span>
+                        <span class="text-xs text-slate-400">Estructura Atómica</span>
+                    </button>
+                    <button onclick="filterByGrade('9°')" class="bg-white border border-slate-200 hover:border-teal-500 hover:bg-teal-50/20 p-4 rounded-xl text-center transition group">
+                        <span class="block text-2xl mb-1">🧊</span>
+                        <span class="block font-bold text-slate-800 group-hover:text-teal-600">Grado 9°</span>
+                        <span class="text-xs text-slate-400">Reacciones Químicas</span>
+                    </button>
+                    <button onclick="filterByGrade('10°')" class="bg-white border border-slate-200 hover:border-teal-500 hover:bg-teal-50/20 p-4 rounded-xl text-center transition group">
+                        <span class="block text-2xl mb-1">💡</span>
+                        <span class="block font-bold text-slate-800 group-hover:text-teal-600">Grado 10°</span>
+                        <span class="text-xs text-slate-400">Química General</span>
+                    </button>
+                    <button onclick="filterByGrade('11°')" class="bg-white border border-slate-200 hover:border-teal-500 hover:bg-teal-50/20 p-4 rounded-xl text-center transition group">
+                        <span class="block text-2xl mb-1">🧬</span>
+                        <span class="block font-bold text-slate-800 group-hover:text-teal-600">Grado 11°</span>
+                        <span class="text-xs text-slate-400">Química Orgánica</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recursos Destacados de Acceso Rápido -->
+            <div class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-slate-900">Recursos Clave y Destacados</h3>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-md">Recomendados para Estudio Autónomo</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Tabla Periódica -->
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 card-shadow flex flex-col justify-between hover:border-slate-200 transition">
+                        <div>
+                            <div class="bg-rose-50 text-rose-600 p-2.5 rounded-xl w-fit mb-4">🎨</div>
+                            <h4 class="font-bold text-slate-900 text-lg mb-2">Tabla Periódica Interactiva</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-4">Navega a través de los elementos químicos con información en tiempo real, propiedades físicas, configuración electrónica y más.</p>
+                        </div>
+                        <button onclick="openResourceModal('Tabla Periódica Interactiva', 'Equipo QuimiRed', 'General', 'Interactiva', 'Gratuita', 'Una tabla periódica de última generación con elementos interactivos y modelados visuales en 3D.')" class="text-teal-600 font-bold text-sm flex items-center gap-1 hover:text-teal-700">Ver Ficha y Acceder &rarr;</button>
+                    </div>
+
+                    <!-- Laboratorio Virtual de Reacciones -->
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 card-shadow flex flex-col justify-between hover:border-slate-200 transition">
+                        <div>
+                            <div class="bg-blue-50 text-blue-600 p-2.5 rounded-xl w-fit mb-4">⚗️</div>
+                            <h4 class="font-bold text-slate-900 text-lg mb-2">Laboratorio Virtual de Reacciones</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-4">Combina elementos químicos en un ambiente simulado seguro para observar reacciones exotérmicas y cambios de estado.</p>
+                        </div>
+                        <button onclick="openResourceModal('Laboratorio Virtual de Reacciones', 'ChemCollective', 'Medio', 'Simulador Web', 'Creative Commons', 'Plataforma para interactuar de forma simulada con compuestos, permitiendo cálculos estequiométricos de manera directa.')" class="text-teal-600 font-bold text-sm flex items-center gap-1 hover:text-teal-700">Ver Ficha y Acceder &rarr;</button>
+                    </div>
+
+                    <!-- Bingo Químico -->
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 card-shadow flex flex-col justify-between hover:border-slate-200 transition">
+                        <div>
+                            <div class="bg-purple-50 text-purple-600 p-2.5 rounded-xl w-fit mb-4">🎲</div>
+                            <h4 class="font-bold text-slate-900 text-lg mb-2">Bingo Químico Escolar</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-4">Aprende los símbolos y nombres de los compuestos más comunes mediante un juego interactivo de bingo educativo.</p>
+                        </div>
+                        <button onclick="openResourceModal('Bingo Químico', 'Docentes STEM', 'Básico', 'Juego de Mesa / PDF', 'Libre', 'Diseño de cartones interactivos y listado de preguntas químicas para el aula.')" class="text-teal-600 font-bold text-sm flex items-center gap-1 hover:text-teal-700">Ver Ficha y Acceder &rarr;</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usuarios Principales / Quiénes lo usan -->
+            <div class="bg-slate-100/60 border border-slate-200 rounded-2xl p-6 md:p-8 grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Comunidad Educativa</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Este repositorio está optimizado para garantizar la interacción de los diferentes perfiles del entorno escolar, cubriendo desde necesidades del estudiante de secundaria hasta actividades de investigación pedagógica.</p>
+                </div>
+                <div class="md:col-span-3 grid grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200/50">
+                        <h4 class="font-bold text-slate-800 text-sm">👨‍🎓 Estudiantes de 6° a 11°</h4>
+                        <p class="text-xs text-slate-500 mt-1">Acceso a guías, simuladores de autoevaluación y bibliotecas digitales.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200/50">
+                        <h4 class="font-bold text-slate-800 text-sm">👩‍🏫 Docentes de Ciencias</h4>
+                        <p class="text-xs text-slate-500 mt-1">Carga de material, planeaciones y rúbricas interactivas.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200/50">
+                        <h4 class="font-bold text-slate-800 text-sm">📋 Coordinadores e Inv.</h4>
+                        <p class="text-xs text-slate-500 mt-1">Revisión pedagógica, pertinencia curricular y reportes de uso.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200/50">
+                        <h4 class="font-bold text-slate-800 text-sm">🛡️ Administradores</h4>
+                        <p class="text-xs text-slate-500 mt-1">Supervisión integral de la calidad de los recursos educativos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECCIÓN: RECURSOS EDUCATIVOS (Biblioteca & Buscador) ================= -->
+        <section id="recursos-sec" class="space-y-6 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900">Búsqueda y Biblioteca Digital</h2>
+                    <p class="text-sm text-slate-500">Usa el sistema de búsqueda interactivo y los filtros para encontrar recursos escolares.</p>
+                </div>
+                <!-- Indicador de Flujo Gráfico en Descargas -->
+                <div class="flex items-center gap-1 bg-teal-50 border border-teal-100 text-teal-800 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                    <span>Flujo de descarga:</span>
+                    <span class="text-slate-400">Búsqueda ➔ Filtro ➔ Selección ➔ Descarga</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- PANEL LATERAL DE FILTROS -->
+                <aside class="bg-white border border-slate-200 rounded-2xl p-5 space-y-6">
+                    <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wider border-b pb-3">Filtros de Búsqueda</h3>
+
+                    <!-- Búsqueda por Texto -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-600 uppercase">Buscar palabra clave</label>
+                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Ej: Tabla periódica, Orgánica..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition">
+                    </div>
+
+                    <!-- Filtro por Grado -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-600 uppercase">Grado Escolar</label>
+                        <select id="filterGrade" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 cursor-pointer">
+                            <option value="Todos">Todos los grados</option>
+                            <option value="6°">6° Grado</option>
+                            <option value="7°">7° Grado</option>
+                            <option value="8°">8° Grado</option>
+                            <option value="9°">9° Grado</option>
+                            <option value="10°">10° Grado</option>
+                            <option value="11°">11° Grado</option>
+                            <option value="10°-11°">10° - 11° Grado</option>
+                            <option value="6°-7°">6° - 7° Grado</option>
+                            <option value="8°-9°">8° - 9° Grado</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Tipo de Recurso -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-600 uppercase">Tipo de Recurso</label>
+                        <select id="filterType" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 cursor-pointer">
+                            <option value="Todos">Todos los tipos</option>
+                            <option value="Libro Digital">Libro Digital</option>
+                            <option value="Simulador">Simulador</option>
+                            <option value="Video">Video</option>
+                            <option value="Guía Práctica">Guía Práctica</option>
+                            <option value="Evaluación / Juego">Evaluación o Juego</option>
+                        </select>
+                    </div>
+
+                    <button onclick="resetFilters()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2 rounded-lg transition">Limpiar Filtros</button>
+                </aside>
+
+                <!-- TABLA / GRILLA DE RECURSOS -->
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="flex justify-between items-center bg-white border border-slate-200 px-4 py-3 rounded-xl">
+                        <span id="resultsCount" class="text-sm text-slate-600 font-medium">Cargando recursos...</span>
+                        <span class="text-xs text-slate-400">Haz clic en un recurso para abrir su ficha completa de metadatos</span>
+                    </div>
+
+                    <div id="resourcesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Generado dinámicamente mediante JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECCIÓN: SIMULADORES Y LABS ================= -->
+        <section id="simuladores-sec" class="space-y-6 hidden">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900">Laboratorios Virtuales e Interactivos</h2>
+                <p class="text-sm text-slate-500">Entornos de simulación interactiva para experimentar conceptos químicos de forma segura.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- PhET -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col justify-between">
+                    <div>
+                        <span class="bg-sky-100 text-sky-800 text-xs font-bold px-2 py-1 rounded">PhET Interactive</span>
+                        <h3 class="text-lg font-bold text-slate-900 mt-2">PhET Química (U. de Colorado)</h3>
+                        <p class="text-xs text-slate-500 mt-1">Grados: 6° a 11°</p>
+                        <p class="text-sm text-slate-600 mt-3">Simuladores galardonados para comprender temas moleculares, escala atómica, balances de masas y disoluciones de forma visual.</p>
+                    </div>
+                    <div class="pt-6 border-t mt-6 flex justify-between items-center">
+                        <span class="text-xs text-slate-400">Formato: Web Interactivo</span>
+                        <a href="https://phet.colorado.edu/es/simulations/filter?subjects=chemistry" target="_blank" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Abrir PhET &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- ChemCollective -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col justify-between">
+                    <div>
+                        <span class="bg-violet-100 text-violet-800 text-xs font-bold px-2 py-1 rounded">Académico</span>
+                        <h3 class="text-lg font-bold text-slate-900 mt-2">ChemCollective Virtual Labs</h3>
+                        <p class="text-xs text-slate-500 mt-1">Grados: 10° a 11°</p>
+                        <p class="text-sm text-slate-600 mt-3">Ejercicios interactivos en un laboratorio simulado en el que es posible realizar mezclas químicas, titulaciones ácido-base y cálculos estequiométricos.</p>
+                    </div>
+                    <div class="pt-6 border-t mt-6 flex justify-between items-center">
+                        <span class="text-xs text-slate-400">Formato: Web / Java</span>
+                        <a href="http://chemcollective.org/" target="_blank" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Abrir ChemCollective &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- MolView -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col justify-between">
+                    <div>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded">Herramienta 3D</span>
+                        <h3 class="text-lg font-bold text-slate-900 mt-2">MolView: Modelado Molecular</h3>
+                        <p class="text-xs text-slate-500 mt-1">Grados: 8° a 11°</p>
+                        <p class="text-sm text-slate-600 mt-3">Visualizador web interactivo de estructuras de compuestos en 3D. Ideal para entender la geometría molecular y los tipos de enlace químico.</p>
+                    </div>
+                    <div class="pt-6 border-t mt-6 flex justify-between items-center">
+                        <span class="text-xs text-slate-400">Formato: Web Interactivo</span>
+                        <a href="https://molview.org/" target="_blank" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Abrir MolView &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECCIÓN: VIDEOS EDUCATIVOS ================= -->
+        <section id="videos-sec" class="space-y-6 hidden">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900">Videos y Explicaciones de Fenómenos</h2>
+                <p class="text-sm text-slate-500">Recursos multimedia de apoyo para el aula y el estudio individual.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Video 1 -->
+                <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden card-shadow">
+                    <div class="bg-slate-200 aspect-video flex items-center justify-center text-slate-400 relative">
+                        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1532187643603-ba119ca4109e?w=800&auto=format&fit=crop&q=60')"></div>
+                        <div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
+                            <span class="text-white text-3xl">▶️</span>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <span class="bg-rose-100 text-rose-800 text-xs font-bold px-2 py-0.5 rounded">Básico</span>
+                        <h3 class="font-bold text-slate-900 text-lg mt-2">¿Qué es el Átomo y su Estructura Básica?</h3>
+                        <p class="text-xs text-slate-400 mt-1">Autor: Brenda Romero | Duración: 8:45 mins</p>
+                        <p class="text-sm text-slate-600 mt-2">Un recorrido amigable desde los modelos clásicos hasta la visualización orbital para estudiantes de 6° a 8°.</p>
+                    </div>
+                </div>
+
+                <!-- Video 2 -->
+                <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden card-shadow">
+                    <div class="bg-slate-200 aspect-video flex items-center justify-center text-slate-400 relative">
+                        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6?w=800&auto=format&fit=crop&q=60')"></div>
+                        <div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
+                            <span class="text-white text-3xl">▶️</span>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded">Medio</span>
+                        <h3 class="font-bold text-slate-900 text-lg mt-2">Experiencias de Laboratorio: Reacciones de Óxido-Reducción</h3>
+                        <p class="text-xs text-slate-400 mt-1">Autor: Docentes de Práctica | Duración: 12:30 mins</p>
+                        <p class="text-sm text-slate-600 mt-2">Videos educativos detallando las reacciones redox en entornos controlados y los protocolos de bioseguridad escolar.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECCIÓN: GUÍAS Y ACTIVIDADES ================= -->
+        <section id="guias-sec" class="space-y-6 hidden">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900">Guías de Trabajo y Actividades Didácticas</h2>
+                <p class="text-sm text-slate-500">Documentos con ejercicios paso a paso, manuales de laboratorio y retos curriculares.</p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
+                <div class="flex items-center gap-2 text-teal-600">
+                    <span class="text-xl">📁</span>
+                    <h3 class="font-bold text-lg text-slate-900">Ficheros de Descarga Rápida</h3>
+                </div>
+                <div class="divide-y">
+                    <div class="py-3 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-slate-800 text-sm">Manual de Prácticas de Laboratorio Química General</p>
+                            <span class="text-xs text-slate-400">Autor: Docentes de Prácticas • PDF • 4.2 MB</span>
+                        </div>
+                        <button onclick="simulateDownload('Manual de Prácticas de Laboratorio')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded transition">Descargar</button>
+                    </div>
+                    <div class="py-3 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-slate-800 text-sm">Guía de Enlaces Químicos y Estructuras de Lewis</p>
+                            <span class="text-xs text-slate-400">Autor: Alexandra Canencia • PDF • 1.8 MB</span>
+                        </div>
+                        <button onclick="simulateDownload('Guía de Enlaces Químicos')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded transition">Descargar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECCIÓN: EVALUACIONES ================= -->
+        <section id="evaluaciones-sec" class="space-y-6 hidden">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900">Evaluaciones e Interacciones Dinámicas</h2>
+                <p class="text-sm text-slate-500">Módulos interactivos y cuestionarios rápidos para valorar los aprendizajes de tus clases de Química.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Cuestionario Interactivo de Nomenclatura -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-slate-900 text-lg">Prueba Rápida de Nomenclatura Orgánica</h3>
+                    <p class="text-xs text-slate-500">Área: Química Orgánica | Grado: 10° a 11°</p>
+                    <div class="border rounded-xl p-4 bg-slate-50 space-y-3">
+                        <p class="text-sm font-bold text-slate-700">Pregunta 1: ¿Cuál es el nombre correcto del hidrocarburo saturado de 3 átomos de carbono (C3H8)?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 text-xs font-medium text-slate-600 bg-white border px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                <input type="radio" name="q1" value="a"> Propano (Fórmula general de Alcanos)
+                            </label>
+                            <label class="flex items-center gap-2 text-xs font-medium text-slate-600 bg-white border px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                <input type="radio" name="q1" value="b"> Propeno (Enlace Doble)
+                            </label>
+                            <label class="flex items-center gap-2 text-xs font-medium text-slate-600 bg-white border px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                <input type="radio" name="q1" value="c"> Etano (2 Carbonos)
+                            </label>
+                        </div>
+                        <button onclick="checkAnswer()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition mt-2">Verificar Respuesta</button>
+                    </div>
+                </div>
+
+                <!-- Herramientas Externas de Evaluaciones -->
+                <div class="bg-slate-900 text-white border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg">Gamificación y Evaluaciones Externas</h3>
+                        <p class="text-xs text-slate-400 mt-1">Quizzes educativos y dinamismo pedagógico.</p>
+                        <ul class="text-sm text-slate-300 mt-4 space-y-2">
+                            <li>🎯 Escape Rooms Químicos del Portal QuimiRed</li>
+                            <li>📊 Kahoot de Química del Mes</li>
+                            <li>🔍 Quizzes rápidos sobre Balanceo de Ecuaciones</li>
+                        </ul>
+                    </div>
+                    <button onclick="alert('Funcionalidad académica externa conectada')" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold px-4 py-2 rounded-lg transition mt-6">Acceder a Kahoot de Química</button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECCIÓN: CONTACTO ================= -->
+        <section id="contacto-sec" class="space-y-6 hidden">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900">Contacto con QuimiRed</h2>
+                <p class="text-sm text-slate-500">¿Tienes dudas, sugerencias de materiales o deseas reportar la pertinencia de un recurso?</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <form onsubmit="handleSubmitContact(event)" class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-600 uppercase">Nombre Completo</label>
+                            <input type="text" required placeholder="Tu Nombre" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-600 uppercase">Correo Electrónico</label>
+                            <input type="email" required placeholder="correo@institucion.edu.co" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-600 uppercase">Institución de Procedencia</label>
+                        <input type="text" required placeholder="Colegio, Universidad..." class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-600 uppercase">Mensaje o Sugerencia</label>
+                        <textarea rows="4" required placeholder="Describe tu requerimiento..." class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                    </div>
+                    <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm px-6 py-2.5 rounded-lg transition">Enviar Mensaje</button>
+                </form>
+
+                <div class="bg-slate-100/60 border border-slate-200 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-slate-900 text-lg">Información Académica</h3>
+                    <p class="text-sm text-slate-600">Este prototipo de repositorio ha sido diseñado bajo los lineamientos curriculares nacionales para el desarrollo de competencias de ciencias naturales y tecnología educativa.</p>
+                    <div class="space-y-2 pt-4">
+                        <p class="text-xs text-slate-500">📧 <strong class="text-slate-700">Contacto Institucional:</strong> administrador@quimired.edu.co</p>
+                        <p class="text-xs text-slate-500">🏢 <strong class="text-slate-700">Desarrollo:</strong> Facultad de Educación / Licenciatura STEM</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECCIÓN EXTRA: SUBIR RECURSO (Flujo de Docentes) ================= -->
+        <section id="subir-recurso-sec" class="space-y-6 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900">Subir Recurso - Formulario de Metadatos</h2>
+                    <p class="text-sm text-slate-500">Registra un nuevo material en el repositorio llenando la ficha técnica obligatoria de Química.</p>
+                </div>
+                <!-- Gráfico de Flujo Curricular -->
+                <div class="flex items-center gap-1 bg-amber-50 border border-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                    <span>Flujo curricular:</span>
+                    <span class="text-slate-400">Docente ➔ Revisión ➔ Aprobación ➔ Publicación</span>
+                </div>
+            </div>
+
+            <!-- Formulario y Progreso de Flujo -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- FORMULARIO DE CARGA -->
+                <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+                    <form onsubmit="handleUploadResource(event)" class="space-y-6">
+                        <!-- Sección 1: Metadatos Obligatorios -->
+                        <div class="space-y-4">
+                            <h3 class="font-bold text-slate-900 text-sm border-b pb-2 uppercase tracking-wider text-teal-600">1. Metadatos Obligatorios</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Título del Recurso *</label>
+                                    <input type="text" id="mTitulo" required placeholder="Ej: Introducción a la Estequiometría" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Autor *</label>
+                                    <input type="text" id="mAutor" required placeholder="Nombre de docente" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Institución Educativa *</label>
+                                    <input type="text" id="mInstitucion" required placeholder="Nombre de colegio/institución" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Año de Publicación *</label>
+                                    <input type="number" id="mAnio" required placeholder="2026" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Área Temática *</label>
+                                    <input type="text" id="mArea" required placeholder="Ej: Química Inorgánica / Orgánica" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Grado Escolar Destinado *</label>
+                                    <select id="mGrado" required class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500">
+                                        <option value="6°">6° Grado</option>
+                                        <option value="7°">7° Grado</option>
+                                        <option value="8°">8° Grado</option>
+                                        <option value="9°">9° Grado</option>
+                                        <option value="10°">10° Grado</option>
+                                        <option value="11°">11° Grado</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Tipo de Recurso *</label>
+                                    <select id="mTipo" required class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500">
+                                        <option value="Libro Digital">Libro Digital</option>
+                                        <option value="Guía Práctica">Guía Práctica / Taller</option>
+                                        <option value="Simulador">Simulador</option>
+                                        <option value="Video">Video Educativo</option>
+                                        <option value="Evaluación / Juego">Evaluación Interactiva</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Licencia de Uso *</label>
+                                    <input type="text" id="mLicencia" required placeholder="Ej: Creative Commons BY-NC" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500">
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-bold text-slate-600">Descripción del Recurso *</label>
+                                <textarea id="mDescripcion" required rows="2" placeholder="Resume brevemente el contenido y las metas de aprendizaje..." class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-teal-500"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Sección 2: Metadatos Específicos de Química -->
+                        <div class="space-y-4">
+                            <h3 class="font-bold text-slate-900 text-sm border-b pb-2 uppercase tracking-wider text-amber-600">2. Metadatos Específicos de Química</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Tema Curricular Específico</label>
+                                    <input type="text" id="mTemaQuimi" placeholder="Ej: Enlaces Covalentes Polares" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Nivel de Riesgo (Laboratorio)</label>
+                                    <select id="mRiesgo" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs">
+                                        <option value="Bajo / Ninguno">Bajo / Ninguno (Simulación o Teórico)</option>
+                                        <option value="Moderado">Moderado (Materiales Caseros / Controlados)</option>
+                                        <option value="Alto">Alto (Requiere Campana de Extracción y Supervisión)</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Materiales y Reactivos Requeridos</label>
+                                    <input type="text" id="mMateriales" placeholder="Ej: H2O, CuSO4, Vasos precipitados" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-600">Tiempo Estimado de Ejecución</label>
+                                    <input type="text" id="mTiempo" placeholder="Ej: 45 minutos o 2 Sesiones" class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm py-3 rounded-xl transition shadow-lg shadow-teal-500/20">Iniciar Proceso de Carga y Evaluación</button>
+                    </form>
+                </div>
+
+                <!-- DIAGRAMA DINÁMICO DE ESTADO / FLUJO -->
+                <div class="bg-slate-100 border border-slate-200 rounded-2xl p-6 space-y-6">
+                    <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wider">Estado del Flujo Curricular</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Cada recurso enviado por los docentes debe atravesar los siguientes estados de aprobación académica antes de ser listado para descargas estudiantiles:</p>
+
+                    <div class="relative pl-6 space-y-6 border-l border-slate-300">
+                        <!-- Paso 1 -->
+                        <div class="relative">
+                            <span id="step-marker-1" class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-emerald-500 border-4 border-slate-100 flex items-center justify-center"></span>
+                            <h4 class="font-bold text-slate-800 text-xs uppercase">Paso 1: Carga por Docente</h4>
+                            <p class="text-[11px] text-slate-500">El docente rellena la ficha y envía el material didáctico.</p>
+                        </div>
+                        <!-- Paso 2 -->
+                        <div class="relative">
+                            <span id="step-marker-2" class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-slate-100 flex items-center justify-center"></span>
+                            <h4 class="font-bold text-slate-800 text-xs uppercase">Paso 2: Revisión de Pertinencia</h4>
+                            <p class="text-[11px] text-slate-500">Un Evaluador Académico califica la calidad y veracidad científica del tema.</p>
+                        </div>
+                        <!-- Paso 3 -->
+                        <div class="relative">
+                            <span id="step-marker-3" class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-slate-100 flex items-center justify-center"></span>
+                            <h4 class="font-bold text-slate-800 text-xs uppercase">Paso 3: Aprobación y Publicación</h4>
+                            <p class="text-[11px] text-slate-500">El administrador institucional activa la descarga pública en QuimiRed.</p>
+                        </div>
+                    </div>
+
+                    <div id="uploadStatusText" class="bg-white border p-4 rounded-xl text-xs text-slate-600 text-center font-medium hidden">
+                        Aún no se ha iniciado ningún envío en la sesión actual.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 mt-16 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-white">
+                    <span class="text-xl">🧪</span>
+                    <span class="text-lg font-extrabold tracking-tight">QuimiRed</span>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">Repositorio digital de recursos académicos especializados en química básica, media y secundaria escolar.</p>
+            </div>
+            <div>
+                <h4 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Enlaces Académicos</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" onclick="showSection('recursos')" class="hover:text-white transition">Biblioteca Digital</a></li>
+                    <li><a href="#" onclick="showSection('simuladores')" class="hover:text-white transition">Simuladores Activos</a></li>
+                    <li><a href="#" onclick="showSection('contacto')" class="hover:text-white transition">Soporte y Coordinadores</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Proyecto Institucional</h4>
+                <p class="text-xs text-slate-400 leading-relaxed">Desarrollo prototipado con fines educativos de presentación académica para asignaturas STEM y pedagogías activas.</p>
+                <p class="text-xs text-slate-500 mt-4">&copy; 2026 QuimiRed. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL DE METADATOS COMPLETOS (VISTA DE DETALLE / FICHA DE RECUPERACIÓN) -->
+    <div id="metadataModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl overflow-hidden card-shadow flex flex-col max-h-[90vh]">
+            <!-- Encabezado Modal -->
+            <div class="bg-slate-900 text-white p-5 flex justify-between items-center">
+                <div>
+                    <span class="text-xs text-teal-400 font-bold uppercase tracking-wider">Ficha Completa de Metadatos (QuimiRed)</span>
+                    <h3 id="modalTitle" class="text-xl font-bold">Título del Recurso</h3>
+                </div>
+                <button onclick="closeResourceModal()" class="text-slate-400 hover:text-white text-2xl font-semibold">&times;</button>
+            </div>
+            <!-- Contenido Modal (Scrollable) -->
+            <div class="p-6 overflow-y-auto space-y-6 text-sm">
+                <!-- Metadatos Obligatorios -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-slate-950 uppercase text-xs tracking-wider border-b pb-1 text-teal-600">Metadatos Obligatorios</h4>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-xs">
+                        <p><strong class="text-slate-500">Autor:</strong> <span id="modalAuthor" class="font-semibold text-slate-800">Cargando...</span></p>
+                        <p><strong class="text-slate-500">Grado Escolar:</strong> <span id="modalGrade" class="font-semibold text-slate-800">Cargando...</span></p>
+                        <p><strong class="text-slate-500">Tipo de Recurso:</strong> <span id="modalType" class="font-semibold text-slate-800">Cargando...</span></p>
+                        <p><strong class="text-slate-500">Área Temática:</strong> <span class="font-semibold text-slate-800">Química Escolar</span></p>
+                        <p><strong class="text-slate-500">Licencia de Uso:</strong> <span id="modalLicence" class="font-semibold text-slate-800">Cargando...</span></p>
+                        <p><strong class="text-slate-500">Formato del Archivo:</strong> <span class="font-semibold text-slate-800">PDF / Enlace Interactivo</span></p>
+                    </div>
+                    <div class="pt-2">
+                        <p class="text-xs text-slate-500 font-bold mb-1">Descripción pedagógica:</p>
+                        <p id="modalDesc" class="text-xs text-slate-600 leading-relaxed bg-slate-50 p-2.5 rounded border border-slate-100">Cargando...</p>
+                    </div>
+                </div>
+
+                <!-- Metadatos de Química -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-slate-950 uppercase text-xs tracking-wider border-b pb-1 text-amber-600">Metadatos de Especialidad (Química)</h4>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-xs">
+                        <p><strong class="text-slate-500">Nivel de Riesgo:</strong> <span class="font-semibold text-slate-800">Bajo / Ninguno</span></p>
+                        <p><strong class="text-slate-500">Nivel de Complejidad:</strong> <span class="font-semibold text-slate-800">Apto Aula</span></p>
+                        <p><strong class="text-slate-500">Tiempo de Ejecución:</strong> <span class="font-semibold text-slate-800">45 minutos</span></p>
+                        <p><strong class="text-slate-500">Tipo de Experimento:</strong> <span class="font-semibold text-slate-800">Simulación / Demostración</span></p>
+                    </div>
+                </div>
+            </div>
+            <!-- Pie Modal -->
+            <div class="bg-slate-50 p-4 border-t flex justify-end gap-2">
+                <button onclick="closeResourceModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800">Cerrar</button>
+                <button onclick="downloadFromModal()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Descargar Recurso</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÓDIGO JS INTERACTIVO PARA SIMULACIÓN -->
+    <script>
+        // BASE DE DATOS LOCAL DE RECURSOS (Incluye todos los de tu documento)
+        let resourcesDB = [
+            {
+                titulo: "Química General",
+                autor: "Alexandra Canencia",
+                grado: "10°-11°",
+                tipo: "Libro Digital",
+                descripcion: "Guía pedagógica completa para la comprensión de reacciones, nomenclatura clásica y cálculos estequiométricos de bachillerato.",
+                licencia: "Creative Commons BY-NC",
+                tema: "Química General"
+            },
+            {
+                titulo: "Química Orgánica Escolar",
+                autor: "Equipo QuimiRed",
+                grado: "11°",
+                tipo: "Libro Digital",
+                descripcion: "Módulo enfocado en la nomenclatura IUPAC de cadenas de carbono, grupos funcionales simples, alcoholes y ácidos carboxílicos.",
+                licencia: "Libre de Distribución",
+                tema: "Química Orgánica"
+            },
+            {
+                titulo: "Química Interactiva para 6° y 7°",
+                autor: "Brenda Romero",
+                grado: "6°-7°",
+                tipo: "Libro Digital",
+                descripcion: "Introducción guiada al mundo de los elementos químicos, estados de la materia y mezclas homogéneas y heterogéneas.",
+                licencia: "Creative Commons BY-SA",
+                tema: "Química Básica"
+            },
+            {
+                titulo: "Química Básica para 8° y 9°",
+                autor: "Docentes STEM",
+                grado: "8°-9°",
+                tipo: "Libro Digital",
+                descripcion: "Módulo de ciencias naturales centrado en los enlaces químicos, estructura del átomo según Bohr y la clasificación periódica.",
+                licencia: "Creative Commons BY-NC",
+                tema: "Estructura de la Materia"
+            },
+            {
+                titulo: "Manual de Laboratorio y Prácticas",
+                autor: "Docentes de prácticas de laboratorio",
+                grado: "10°-11°",
+                tipo: "Guía Práctica",
+                descripcion: "Fichero con 15 experiencias de laboratorio detallando reactivos necesarios, pasos y normas de bioseguridad escolar.",
+                licencia: "Libre Académico",
+                tema: "Prácticas de Laboratorio"
+            },
+            {
+                titulo: "Tabla Periódica Interactiva",
+                autor: "Equipo QuimiRed",
+                grado: "6°",
+                tipo: "Simulador",
+                descripcion: "Tabla periódica para explorar propiedades, grupos de elementos y familias de compuestos de manera amigable.",
+                licencia: "Licencia de Uso Académico",
+                tema: "Clasificación Periódica"
+            },
+            {
+                titulo: "Laboratorio de Reacciones Químicas",
+                autor: "ChemCollective",
+                grado: "10°",
+                tipo: "Simulador",
+                descripcion: "Simulación interactiva para balancear reacciones sencillas y medir las concentraciones finales de reactivos.",
+                licencia: "Uso Libre",
+                tema: "Balance de Materia"
+            }
+        ];
+
+        // ROL DE USUARIO INICIAL
+        let activeRole = "Estudiante";
+
+        // GESTIÓN DE ROL
+        function changeRole(val) {
+            activeRole = val;
+            const alertBanner = document.getElementById("roleAlertBanner");
+            const alertRoleName = document.getElementById("alertRoleName");
+
+            if (val === "Docente") {
+                alertBanner.classList.remove("hidden");
+                alertRoleName.textContent = "Docente";
+            } else {
+                alertBanner.classList.add("hidden");
+            }
+            alert("Has cambiado al rol de: " + val + ". Ahora puedes navegar con sus permisos simulados.");
+        }
+
+        // CONTROL DE NAVEGACIÓN ENTRE VISTAS
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            document.getElementById("inicio-sec").classList.add("hidden");
+            document.getElementById("recursos-sec").classList.add("hidden");
+            document.getElementById("simuladores-sec").classList.add("hidden");
+            document.getElementById("videos-sec").classList.add("hidden");
+            document.getElementById("guias-sec").classList.add("hidden");
+            document.getElementById("evaluaciones-sec").classList.add("hidden");
+            document.getElementById("contacto-sec").classList.add("hidden");
+            document.getElementById("subir-recurso-sec").classList.add("hidden");
+
+            // Mostrar la seleccionada
+            document.getElementById(sectionId + "-sec").classList.remove("hidden");
+
+            // Marcar botón activo
+            document.querySelectorAll(".nav-btn").forEach(btn => {
+                btn.classList.remove("bg-teal-500", "text-slate-950", "text-white");
+                btn.classList.add("text-slate-600");
+            });
+
+            // Hacer scroll hacia arriba
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // FILTRADO DINÁMICO DE RECURSOS
+        function renderResources(list) {
+            const grid = document.getElementById("resourcesGrid");
+            const countLabel = document.getElementById("resultsCount");
+            grid.innerHTML = "";
+
+            if (list.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-slate-50 border rounded-2xl">
+                        <span class="text-3xl">🔍</span>
+                        <p class="text-slate-500 font-medium mt-2">No se encontraron recursos que coincidan con los filtros aplicados.</p>
+                    </div>
+                `;
+                countLabel.textContent = "0 recursos encontrados";
+                return;
+            }
+
+            countLabel.textContent = `${list.length} recurso(s) educativo(s) listado(s)`;
+
+            list.forEach(res => {
+                const card = document.createElement("div");
+                card.className = "bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col justify-between hover:border-teal-500 cursor-pointer transition";
+                card.onclick = () => openResourceModal(res.titulo, res.autor, res.grado, res.tipo, res.licencia, res.descripcion);
+                
+                let icon = "📘";
+                if(res.tipo === "Simulador") icon = "⚗️";
+                if(res.tipo === "Guía Práctica") icon = "📝";
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start gap-2">
+                            <span class="text-2xl">${icon}</span>
+                            <span class="bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded">${res.grado}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mt-3">${res.titulo}</h4>
+                        <p class="text-xs text-slate-400 mt-1">Autor: ${res.autor}</p>
+                        <p class="text-xs text-slate-600 mt-2 line-clamp-2">${res.descripcion}</p>
+                    </div>
+                    <div class="pt-4 border-t mt-4 flex justify-between items-center text-xs">
+                        <span class="text-slate-400">${res.tipo}</span>
+                        <span class="text-teal-600 font-bold">Ver Ficha &rarr;</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function applyFilters() {
+            const text = document.getElementById("searchInput").value.toLowerCase();
+            const grade = document.getElementById("filterGrade").value;
+            const type = document.getElementById("filterType").value;
+
+            const filtered = resourcesDB.filter(res => {
+                const matchesText = res.titulo.toLowerCase().includes(text) || res.descripcion.toLowerCase().includes(text) || res.autor.toLowerCase().includes(text);
+                const matchesGrade = grade === "Todos" || res.grado === grade || res.grado.includes(grade);
+                const matchesType = type === "Todos" || res.tipo === type;
+
+                return matchesText && matchesGrade && matchesType;
+            });
+
+            renderResources(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("filterGrade").value = "Todos";
+            document.getElementById("filterType").value = "Todos";
+            renderResources(resourcesDB);
+        }
+
+        function filterByGrade(gradeNum) {
+            showSection('recursos');
+            document.getElementById("filterGrade").value = gradeNum;
+            applyFilters();
+        }
+
+        // SIMULACIÓN DE DETALLE / MODAL DE RECURSO
+        let currentModalTitle = "";
+        function openResourceModal(titulo, autor, grado, tipo, licencia, desc) {
+            currentModalTitle = titulo;
+            document.getElementById("modalTitle").textContent = titulo;
+            document.getElementById("modalAuthor").textContent = autor;
+            document.getElementById("modalGrade").textContent = grado;
+            document.getElementById("modalType").textContent = tipo;
+            document.getElementById("modalLicence").textContent = licencia;
+            document.getElementById("modalDesc").textContent = desc;
+
+            document.getElementById("metadataModal").classList.remove("hidden");
+            document.getElementById("metadataModal").classList.add("flex");
+        }
+
+        function closeResourceModal() {
+            document.getElementById("metadataModal").classList.add("hidden");
+            document.getElementById("metadataModal").classList.remove("flex");
+        }
+
+        function downloadFromModal() {
+            closeResourceModal();
+            simulateDownload(currentModalTitle);
+        }
+
+        function simulateDownload(name) {
+            alert(`📥 [Flujo de Descarga Completo] Iniciando descarga del archivo de: "${name}".`);
+        }
+
+        // SIMULACIÓN DE CARGA / FLUJO DOCENTE
+        function handleUploadResource(e) {
+            e.preventDefault();
+
+            // Leer campos de formulario
+            const titulo = document.getElementById("mTitulo").value;
+            const autor = document.getElementById("mAutor").value;
+            const grado = document.getElementById("mGrado").value;
+            const tipo = document.getElementById("mTipo").value;
+            const licencia = document.getElementById("mLicencia").value;
+            const desc = document.getElementById("mDescripcion").value;
+
+            // Simular inserción en Base de datos local
+            const newRes = { titulo, autor, grado, tipo, descripcion: desc, licencia, tema: "Física-Química" };
+            resourcesDB.unshift(newRes); // Insertar de primero
+
+            // Mostrar estatus de flujo gráfico
+            const statusBox = document.getElementById("uploadStatusText");
+            statusBox.innerHTML = `
+                <div class="text-left space-y-2">
+                    <p class="text-emerald-700 font-bold">🎉 ¡Recurso subido con éxito por el Docente!</p>
+                    <p><strong>Recurso:</strong> ${titulo}</p>
+                    <p class="text-[10px] text-slate-500">Actualmente se encuentra en revisión pedagógica.</p>
+                </div>
+            `;
+            statusBox.classList.remove("hidden");
+
+            // Cambiar marcadores del flujo en la interfaz
+            document.getElementById("step-marker-2").className = "absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-amber-500 border-4 border-slate-100 flex items-center justify-center";
+            
+            alert("¡Excelente! Has completado el Paso 1: Carga de recurso y metadatos. Se ha enviado una notificación al Evaluador Curricular y al Administrador.");
+
+            // Reiniciar formulario y re-renderizar
+            e.target.reset();
+            applyFilters();
+        }
+
+        // INTERACCIONES DIVERSAS (EVALUACIÓN Y CONTACTO)
+        function checkAnswer() {
+            const opt = document.querySelector('input[name="q1"]:checked');
+            if (!opt) {
+                alert("Por favor, selecciona una opción de respuesta primero.");
+                return;
+            }
+            if (opt.value === "a") {
+                alert("🎉 ¡Respuesta Correcta! El propano es un alcano lineal de 3 carbonos con fórmula molecular C3H8.");
+            } else {
+                alert("❌ Respuesta incorrecta. Revisa la fórmula general de los alcanos (CnH2n+2).");
+            }
+        }
+
+        function handleSubmitContact(e) {
+            e.preventDefault();
+            alert("📬 Mensaje enviado con éxito al administrador. Recibirás respuesta en el correo institucional registrado.");
+            e.target.reset();
+        }
+
+        // Carga Inicial del Sistema
+        window.onload = function() {
+            renderResources(resourcesDB);
+        };
+    </script>
+</body>
+</html>
